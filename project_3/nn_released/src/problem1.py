@@ -73,6 +73,11 @@ class Softmax(Activation):
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        arr = []
+        for col in Z.T:
+            col -= np.max(col)  # normalizing trick
+            arr.append((np.exp(col) / np.sum(np.exp(col))).A1)
+        return np.asmatrix(arr).T
         #########################################
 
     @staticmethod
@@ -122,6 +127,7 @@ class Tanh(Activation):
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        return np.tanh(Z)
         #########################################
 
     @staticmethod
@@ -132,6 +138,7 @@ class Tanh(Activation):
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        return 1 - np.multiply(np.tanh(Z), np.tanh(Z))
         #########################################
 
 # --------------------------
@@ -160,13 +167,17 @@ class CrossEntropyLoss(Loss):
         Refer to
         https://stackoverflow.com/questions/50018625/how-to-handle-log0-when-using-cross-entropy
         to see how to avoid taking log of 0.
-        Think: when and why log 0 happens?
+        Think: when and why log 0 happens? - at 100% incorrect confidence.
         Y: k x m the ground truth labels of m training examples. Y[j, i]=1 if the i-th example has label j.
         Y_hat: k x m the multi-class or multi-label predictions on the m training examples
         :return: a scalar that is the averaged cross entropy loss
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        res = - np.sum(xlogy(Y, Y_hat), axis=0)
+        # print(res)
+        # print(np.mean(res))
+        return np.mean(res)
         #########################################
 
     @staticmethod
@@ -179,6 +190,8 @@ class CrossEntropyLoss(Loss):
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        # FIXME: Is this correct?
+        return Y_hat - Y
         #########################################
 
 # --------------------------
@@ -196,6 +209,7 @@ class MSELoss(Loss):
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        return np.mean(np.mean(np.square(Y_hat - Y), axis=1))
         #########################################
 
     @staticmethod
@@ -208,4 +222,5 @@ class MSELoss(Loss):
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        return Y_hat - Y
         #########################################
