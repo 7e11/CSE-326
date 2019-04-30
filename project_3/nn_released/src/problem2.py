@@ -27,8 +27,19 @@ class NN:
         #########################################
         ## INSERT YOUR CODE HERE
         # Code taken from piazza
-        self.W[i + 1] = np.random.randn(dimensions[i + 1], dimensions[i]) / np.sqrt(dimensions[i])
-        self.b[i + 1] = np.zeros((dimensions[i + 1], 1))
+        np.random.seed(rand_seed)
+        self.W = {}
+        self.b = {}
+        self.z = {}
+        self.a = {}
+        self.dimensions = dimensions
+        self.activation_funcs = activation_funcs
+        self.loss_func = loss_func
+        self.rand_seed = rand_seed
+
+        for i in range(len(dimensions) - 1):
+            self.W[i + 1] = np.random.randn(dimensions[i + 1], dimensions[i]) / np.sqrt(dimensions[i])
+            self.b[i + 1] = np.zeros((dimensions[i + 1], 1))
         #########################################
 
     #--------------------------
@@ -40,6 +51,15 @@ class NN:
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        #first computation
+        self.a[0] = X
+        # self.z[1] = np.matmul(W[1], X) + self.b[1]
+        # self.a[1] = self.activation_funcs[1](z[1])
+        for i in range(len(self.dimensions) - 1):
+            self.z[i + 1] = np.dot(self.W[i + 1], self.a[i]) + self.b[i + 1]
+            self.a[i + 1] = self.activation_funcs[i + 1].activate(self.z[i + 1])
+        print(self.a[len(self.dimensions) - 1])
+        return self.a[len(self.dimensions) - 1]
         #########################################
 
     #--------------------------
