@@ -26,6 +26,9 @@ class NN:
 
         #########################################
         ## INSERT YOUR CODE HERE
+        # Code taken from piazza
+        self.W[i + 1] = np.random.randn(dimensions[i + 1], dimensions[i]) / np.sqrt(dimensions[i])
+        self.b[i + 1] = np.zeros((dimensions[i + 1], 1))
         #########################################
 
     #--------------------------
