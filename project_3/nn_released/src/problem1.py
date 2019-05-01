@@ -175,7 +175,7 @@ class CrossEntropyLoss(Loss):
         #########################################
         ## INSERT YOUR CODE HERE
         res = - np.sum(xlogy(Y, Y_hat), axis=0)
-        # print(res)
+        print(res)
         # print(np.mean(res))
         return np.mean(res)
         #########################################

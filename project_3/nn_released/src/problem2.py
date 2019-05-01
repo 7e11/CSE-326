@@ -36,8 +36,9 @@ class NN:
         self.activation_funcs = activation_funcs
         self.loss_func = loss_func
         self.rand_seed = rand_seed
+        self.num_layers = len(dimensions) - 1  # doesn't include input layer.
 
-        for i in range(len(dimensions) - 1):
+        for i in range(self.num_layers):
             self.W[i + 1] = np.random.randn(dimensions[i + 1], dimensions[i]) / np.sqrt(dimensions[i])
             self.b[i + 1] = np.zeros((dimensions[i + 1], 1))
         #########################################
@@ -51,15 +52,14 @@ class NN:
         """
         #########################################
         ## INSERT YOUR CODE HERE
-        #first computation
         self.a[0] = X
         # self.z[1] = np.matmul(W[1], X) + self.b[1]
         # self.a[1] = self.activation_funcs[1](z[1])
-        for i in range(len(self.dimensions) - 1):
+        for i in range(self.num_layers):
             self.z[i + 1] = np.dot(self.W[i + 1], self.a[i]) + self.b[i + 1]
             self.a[i + 1] = self.activation_funcs[i + 1].activate(self.z[i + 1])
-        print(self.a[len(self.dimensions) - 1])
-        return self.a[len(self.dimensions) - 1]
+        # print(self.a[self.num_layers])
+        return self.a[self.num_layers]
         #########################################
 
     #--------------------------
@@ -73,6 +73,15 @@ class NN:
         """
         #########################################
         ## INSERT YOUR CODE HERE
+        dw = {}
+        db = {}
+        dz = {}
+        da = {}
+        dz[self.num_layers] = self.loss_func.gradient(y, self.a[self.num_layers])
+        dw[self.num_layers] = 1
+        # go through layers backwards
+        for i in range(self.num_layers, 0, -1):
+
         #########################################
 
     #--------------------------
