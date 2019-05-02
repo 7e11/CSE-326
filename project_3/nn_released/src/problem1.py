@@ -76,7 +76,10 @@ class Softmax(Activation):
         arr = []
         for col in Z.T:
             col -= np.max(col)  # normalizing trick
-            arr.append((np.exp(col) / np.sum(np.exp(col))).A1)
+            if type(col) == np.ndarray:
+                arr.append((np.exp(col) / np.sum(np.exp(col))))
+            else:
+                arr.append((np.exp(col) / np.sum(np.exp(col))).A1)
         return np.asmatrix(arr).T
         #########################################
 

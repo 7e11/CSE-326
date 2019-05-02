@@ -28,7 +28,7 @@ class NN:
         ## INSERT YOUR CODE HERE
         # Code taken from piazza
         np.random.seed(rand_seed)
-        self.W = {}
+        self.w = {}
         self.b = {}
         self.z = {}
         self.a = {}
@@ -39,7 +39,7 @@ class NN:
         self.num_layers = len(dimensions) - 1  # doesn't include input layer.
 
         for i in range(self.num_layers):
-            self.W[i + 1] = np.random.randn(dimensions[i + 1], dimensions[i]) / np.sqrt(dimensions[i])
+            self.w[i + 1] = np.random.randn(dimensions[i + 1], dimensions[i]) / np.sqrt(dimensions[i])
             self.b[i + 1] = np.zeros((dimensions[i + 1], 1))
         #########################################
 
@@ -56,7 +56,7 @@ class NN:
         # self.z[1] = np.matmul(W[1], X) + self.b[1]
         # self.a[1] = self.activation_funcs[1](z[1])
         for i in range(self.num_layers):
-            self.z[i + 1] = np.dot(self.W[i + 1], self.a[i]) + self.b[i + 1]
+            self.z[i + 1] = np.dot(self.w[i + 1], self.a[i]) + self.b[i + 1]
             self.a[i + 1] = self.activation_funcs[i + 1].activate(self.z[i + 1])
         # print(self.a[self.num_layers])
         return self.a[self.num_layers]
@@ -77,11 +77,18 @@ class NN:
         db = {}
         dz = {}
         da = {}
-        dz[self.num_layers] = self.loss_func.gradient(y, self.a[self.num_layers])
-        dw[self.num_layers] = 1
-        # go through layers backwards
-        for i in range(self.num_layers, 0, -1):
-
+        da[self.num_layers] = self.loss_func.gradient(y, self.a[self.num_layers])
+        
+        for i in range(self.num_layers, 0, -1): #num_layers 2 -> 1 (inclusive)
+            try:
+                dz[i] = np.multiply(da[i], self.activation_funcs[i].gradient(self.z[i]))
+            except:
+                dz[i] = da[i]
+            dw[i] = (1 / y.size) * dz[i] * self.a[i - 1].T #where m is the number of nodes in layer?
+            da[i - 1] = self.w[i].T * dz[i]
+            db[i] = np.asmatrix((1 / y.size) * np.sum(dz[i].A, axis=1, keepdims=True))
+        # print(dw, db)
+        return dw, db
         #########################################
 
     #--------------------------
@@ -105,10 +112,22 @@ class NN:
         for it in range(iter_num):
             #########################################
             ## INSERT YOUR CODE HERE
+            y_hat = self.forward(X_train)
+            dw, db = self.backward(Y_train)
+            norm_dw, norm_db = 0, 0
+            for key in dw:
+                norm_dw += np.linalg.norm(dw[key])
+                self.w[key] -= eta * dw[key]
+            for key in db:
+                norm_db += np.linalg.norm(db[key])
+                self.b[key] -= eta * db[key]
+            l = self.loss_func.loss(Y_train, y_hat) # most recent loss entry
+            losses.append(l)
+            grad_norms.append(norm_dw + norm_db)
             #########################################
 
             if (it + 1) % record_every == 0:
-                print('iterations = {}: loss = {}, gradient norms = {}'.format(it, l, grad_norm), end=' ')
+                print('iterations = {}: loss = {}, gradient norms = {}'.format(it, l, grad_norms), end=' ')
                 if 'Test X' in kwargs and 'Test Y' in kwargs:
                     prediction_accuracy = self.test(**kwargs)
                     print (', test error = {}'.format(prediction_accuracy))
