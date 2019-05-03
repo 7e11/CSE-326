@@ -5,4 +5,4 @@ project_1 - implementation of logistic regression from scratch using gradient de
 
 project_2 - implementation of SVM from scratch, including a basic SMO algorithm.
 
-project_3 - 
+project_3 - implementation of a vectorized Feed Forward Neural Network
